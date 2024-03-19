@@ -1,5 +1,6 @@
 import os
 from prettytable import PrettyTable
+import math
 
 class Instrumen:
     id_counter = 1 
@@ -87,12 +88,16 @@ class DoubleLinkedList:
     def quicksort(self, instrumens, key_func, reverse=False):
         if len(instrumens) <= 1:
             return instrumens
-        pivot = instrumens[len(instrumens) // 2]
-        left = [x for x in instrumens if key_func(x) < key_func(pivot)]
-        middle = [x for x in instrumens if key_func(x) == key_func(pivot)]
-        right = [x for x in instrumens if key_func(x) > key_func(pivot)]
+        
+        pivot_index = len(instrumens) // 2
+        pivot = instrumens[pivot_index]
+        left = [x for idx, x in enumerate(instrumens) if idx != pivot_index and key_func(x) <= key_func(pivot)]
+        right = [x for idx, x in enumerate(instrumens) if idx != pivot_index and key_func(x) > key_func(pivot)]
 
-        return self.quicksort(left, key_func, reverse) + middle + self.quicksort(right, key_func, reverse)
+        sorted_left = self.quicksort(left, key_func, reverse)
+        sorted_right = self.quicksort(right, key_func, reverse)
+
+        return sorted_left + [pivot] + sorted_right
 
     def sort_by_harga(self, ascending=True):
         instrumens = self.get_instruments()
@@ -123,6 +128,48 @@ class DoubleLinkedList:
             current = instrument
         self.tail = current
         current.next_instrumen = None
+
+    def fibonacci_search(self, instrumen_id):
+        def fibonacci(n):
+            fib = [0, 1]
+            while fib[-1] < n:
+                fib.append(fib[-1] + fib[-2])
+            return fib
+
+        n = self.count_nodes()
+        fib = fibonacci(n)
+        offset = 0
+
+        current = self.head
+        while fib:
+            fib_m = fib.pop()
+            i = min(offset + fib_m, n - 1)
+            node = self.get_node_at_index(i)
+            if node.id == instrumen_id:
+                return node
+            elif node.id < instrumen_id:
+                offset = i
+            else:
+                fib.pop()
+        return None
+
+    def count_nodes(self):
+        count = 0
+        current = self.head
+        while current:
+            count += 1
+            current = current.next_instrumen
+        return count
+
+    def get_node_at_index(self, index):
+        current = self.head
+        count = 0
+        while current:
+            if count == index:
+                return current
+            count += 1
+            current = current.next_instrumen
+        return None
 
 class MusicShop:
     def __init__(self, name, default_data=None):
@@ -167,7 +214,7 @@ class MusicShop:
 
     def search_instrument(self): 
         instrument_id = int(input("Masukkan ID instrumen untuk dicari: "))
-        instrument = self.find_instrument_by_id(instrument_id)
+        instrument = self.inventory.fibonacci_search(instrument_id)
 
         if instrument:
             print(f"\nInstrument ditemukan:")
@@ -240,3 +287,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
