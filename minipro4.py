@@ -129,7 +129,7 @@ class DoubleLinkedList:
         self.tail = current
         current.next_instrumen = None
 
-    def fibonacci_search(self, instrumen_id):
+    def fibonacci_search_by_id(self, instrumen_id):
         def fibonacci(n):
             fib = [0, 1]
             while fib[-1] < n:
@@ -151,6 +151,14 @@ class DoubleLinkedList:
                 offset = i
             else:
                 fib.pop()
+        return None
+
+    def fibonacci_search_by_brand(self, brand):
+        current = self.head
+        while current:
+            if current.merek.lower() == brand.lower():
+                return current
+            current = current.next_instrumen
         return None
 
     def count_nodes(self):
@@ -203,25 +211,39 @@ class MusicShop:
             self.inventory.sort_by_stok(ascending=False)
         else:
             print("Pilihan tidak valid. Silakan coba lagi.")
+            
+    def search_instrument(self):
+        print("Pilihan:")
+        print("1. Berdasarkan ID")
+        print("2. Berdasarkan Merek")
+        option = input("Masukkan pilihan: ")
 
-    def find_instrument_by_id(self, instrument_id): 
-        current = self.inventory.head
-        while current:
-            if current.id == instrument_id:
-                return current
-            current = current.next_instrumen
-        return None 
+        if option == "1":
+            self.search_instrument_by_id()
+        elif option == "2":
+            self.search_instrument_by_brand()
+        else:
+            print("Pilihan tidak valid.")
 
-    def search_instrument(self): 
-        instrument_id = int(input("Masukkan ID instrumen untuk dicari: "))
-        instrument = self.inventory.fibonacci_search(instrument_id)
+    def search_instrument_by_id(self):
+        instrumen_id = int(input("Masukkan ID instrumen untuk dicari: "))
+        instrument = self.inventory.fibonacci_search_by_id(instrumen_id)
 
         if instrument:
             print(f"\nInstrument ditemukan:")
-            instrument.display_info() 
+            instrument.display_info()
         else:
-            print(f"Instrument dengan ID {instrument_id} tidak ditemukan.") 
+            print(f"Instrument dengan ID {instrumen_id} tidak ditemukan.")
 
+    def search_instrument_by_brand(self):
+        brand = input("Masukkan merek instrumen untuk dicari: ")
+        instrument = self.inventory.fibonacci_search_by_brand(brand)
+
+        if instrument:
+            print(f"\nInstrument ditemukan:")
+            instrument.display_info()
+        else:
+            print(f"Instrument dengan merek {brand} tidak ditemukan.")
 
 def main():
     data_instrumen = [
@@ -287,4 +309,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
